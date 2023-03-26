@@ -1,0 +1,72 @@
+plugins {
+  id 'application'
+  id 'java'
+  id 'org.beryx.runtime' version '1.13.0'
+}
+
+group 'org.example'
+version '1.0.0'
+
+repositories {
+  mavenCentral()
+}
+
+var swtVersion = '3.123.0'
+dependencies {
+  implementation "org.eclipse.platform:org.eclipse.swt:${swtVersion}"
+  testImplementation 'org.junit.jupiter:junit-jupiter-api:5.8.1'
+  testRuntimeOnly 'org.junit.jupiter:junit-jupiter-engine:5.8.1'
+}
+
+configurations.configureEach {
+  resolutionStrategy {
+    dependencySubstitution {
+      def os = System.getProperty("os.name").toLowerCase()
+      def arch = System.getProperty("os.arch").toLowerCase()
+      if (os.contains("windows")) {
+        substitute module('org.eclipse.platform:org.eclipse.swt.${osgi.platform}') with module("org.eclipse.platform:org.eclipse.swt.win32.win32.x86_64:${swtVersion}")
+      } else if (os.contains("linux")) {
+        if (arch.contains('aarch64')) {
+          substitute module('org.eclipse.platform:org.eclipse.swt.${osgi.platform}') with module("org.eclipse.platform:org.eclipse.swt.gtk.linux.aarch64:${swtVersion}")
+        } else {
+          substitute module('org.eclipse.platform:org.eclipse.swt.${osgi.platform}') with module("org.eclipse.platform:org.eclipse.swt.gtk.linux.x86_64:${swtVersion}")
+        }
+      } else if (os.contains("mac")) {
+        if (arch.contains('aarch64')) {
+          substitute module('org.eclipse.platform:org.eclipse.swt.${osgi.platform}') with module("org.eclipse.platform:org.eclipse.swt.cocoa.macosx.aarch64:${swtVersion}")
+        } else {
+          substitute module('org.eclipse.platform:org.eclipse.swt.${osgi.platform}') with module("org.eclipse.platform:org.eclipse.swt.cocoa.macosx.x86_64:${swtVersion}")
+        }
+      }
+    }
+  }
+}
+
+application {
+  mainClass = 'org.example.swt.App'
+  if (System.getProperty("os.name").toLowerCase().contains("mac")) {
+    applicationDefaultJvmArgs += '-XstartOnFirstThread'
+  }
+}
+
+java {
+  compileJava {
+    options.release = 17
+    options.encoding = 'utf-8'
+    options.compilerArgs.addAll(['-Xlint:all', '-Werror', '-implicit:class'])
+  }
+  compileTestJava {
+    options.release = 17
+    options.encoding = 'utf-8'
+    options.compilerArgs.addAll(['-Xlint:all', '-Werror', '-implicit:class'])
+  }
+}
+
+runtime {
+  options = ['--strip-debug', '--compress', '2', '--no-header-files', '--no-man-pages']
+  modules = ['java.desktop']
+}
+
+test {
+  useJUnitPlatform()
+}
