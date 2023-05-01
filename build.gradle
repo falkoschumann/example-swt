@@ -14,8 +14,7 @@ repositories {
 var swtVersion = '3.123.0'
 dependencies {
   implementation "org.eclipse.platform:org.eclipse.swt:${swtVersion}"
-  testImplementation 'org.junit.jupiter:junit-jupiter-api:5.9.2'
-  testRuntimeOnly 'org.junit.jupiter:junit-jupiter-engine:5.9.3'
+  testImplementation 'org.junit.jupiter:junit-jupiter:5.9.3'
 }
 
 configurations.configureEach {
