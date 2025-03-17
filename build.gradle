@@ -11,7 +11,7 @@ repositories {
   mavenCentral()
 }
 
-var swtVersion = '3.128.0'
+var swtVersion = '3.129.0'
 dependencies {
   implementation "org.eclipse.platform:org.eclipse.swt:${swtVersion}"
   testImplementation 'org.junit.jupiter:junit-jupiter:5.12.1'
